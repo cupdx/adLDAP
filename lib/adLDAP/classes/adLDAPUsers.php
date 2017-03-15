@@ -313,10 +313,11 @@ class adLDAPUsers
 	 * @param string $username The username to query
 	 * @param array $fields Array of parameters to query
 	 * @param bool $isGUID Is the username passed a GUID or a samAccountName
+	 * @param bool $employeeID
 	 * @return array|bool
 	 * @throws Exception
 	 */
-	public function info($username, $fields = NULL, $isGUID = false)
+	public function info($username, $fields = NULL, $isGUID = false, $employeeID = false)
 	{
 		if ($username === NULL)
 		{
@@ -336,16 +337,13 @@ class adLDAPUsers
 		{
 			$filter = "userPrincipalName=" . $username;
 		}
+		else if ($employeeID)
+		{
+			$filter = "employeeID=" . $username;
+		}
 		else
 		{
-			if (preg_match('/\d/', $username))
-			{
-				$filter = "employeeID=" . $username;
-			}
-			else
-			{
-				$filter = "samaccountname=" . $username;
-			}
+			$filter = "samaccountname=" . $username;
 		}
 		$filter = "(&(objectCategory=person)({$filter}))";
 		if ($fields === NULL)
