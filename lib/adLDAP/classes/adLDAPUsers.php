@@ -338,8 +338,14 @@ class adLDAPUsers
 		}
 		else
 		{
-			$filter = "|(samaccountname=" . $username . ')';
-			$filter .= "(employeeID=" . $username . ')';
+			if (preg_match('/\d/', $username))
+			{
+				$filter = "employeeID=" . $username;
+			}
+			else
+			{
+				$filter = "samaccountname=" . $username;
+			}
 		}
 		$filter = "(&(objectCategory=person)({$filter}))";
 		if ($fields === NULL)
