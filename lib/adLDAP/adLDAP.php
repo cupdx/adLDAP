@@ -50,6 +50,7 @@ use /** @noinspection PhpUndefinedNamespaceInspection */
 	/** @noinspection PhpUndefinedClassInspection */
 	Cu\Logging\Helpers\Logging;
 use Exception;
+use Log;
 
 require_once(dirname(__FILE__) . '/collections/adLDAPCollection.php');
 require_once(dirname(__FILE__) . '/classes/adLDAPGroups.php');
@@ -824,14 +825,13 @@ class adLDAP
 		}
 
 		/** @noinspection PhpUndefinedClassInspection */
-		Logging::trace('ldap_bind(' . $this->ldapConnection . ', ' . $username . $this->accountSuffix . ', $password');
 
 		// Bind as the user
 		$ret            = true;
 		$this->ldapBind = @ldap_bind($this->ldapConnection, $username . $this->accountSuffix, $password);
 		if (!$this->ldapBind)
 		{
-			$ret = false;
+			throw new adLDAPException('Rebind to Active Directory failed. AD said: ' . $this->getLastError());
 		}
 
 		// Once we've checked their details, kick back into admin mode if we have it
@@ -1242,6 +1242,23 @@ class adLDAP
 		if (isset($attributes["contact_email"]))
 		{
 			$mod["targetAddress"][0] = $attributes["contact_email"];
+		}
+
+		//this should work
+		if (isset($attributes["bannerudc"]))
+		{
+			$mod["bannerudc"][0] = $attributes["bannerudc"];
+		}
+		
+		// this shouldn't work
+		if (isset($attributes["bannerUDC"]))
+		{
+			$mod["bannerUDC"][0] = $attributes["bannerUDC"];
+		}
+
+		if (isset($attributes["employeeid"]))
+		{
+			$mod["employeeid"][0] = $attributes["employeeid"];
 		}
 
 		//echo ("<pre>"); print_r($mod);

@@ -43,6 +43,8 @@ use Exception;
 require_once(dirname(__FILE__) . '/../adLDAP.php');
 require_once(dirname(__FILE__) . '/../collections/adLDAPUserCollection.php');
 
+use Log;
+
 /**
  * USER FUNCTIONS
  */
@@ -610,8 +612,7 @@ class adLDAPUsers
 			}
 			$mod["userAccountControl"][0] = $this->accountControl($controlOptions);
 		}
-
-		// Do the update
+		
 		$result = @ldap_modify($this->adldap->getLdapConnection(), $userDn, $mod);
 		if ($result == false)
 		{
@@ -784,7 +785,10 @@ class adLDAPUsers
 		$usersArray = array();
 		for ($i = 0; $i < $entries["count"]; $i++)
 		{
-			if ($includeDescription && strlen($entries[$i]["displayname"][0]) > 0)
+			if ($includeDescription &&
+				isset($entries[$i]["displayname"]) &&
+				is_array($entries[$i]["displayname"])  &&
+				strlen($entries[$i]["displayname"][0]) > 0)
 			{
 				$usersArray[$entries[$i]["samaccountname"][0]] = $entries[$i]["displayname"][0];
 			}
@@ -802,6 +806,30 @@ class adLDAPUsers
 			asort($usersArray);
 		}
 		return $usersArray;
+	}
+
+	/**
+	 * Return a list of users in AD with Banner_id and UDC
+	 *
+	 * @param bool $includeDescription Return a description of the user
+	 * @param string $search Search parameter
+	 * @param bool $sorted Sort the user accounts
+	 * @return array|bool
+	 */
+	public function allObject($includeDescription = false, $search = "*", $sorted = true)
+	{
+		if (!$this->adldap->getLdapBind())
+		{
+			return false;
+		}
+
+		// Perform the search and grab all their details
+		$filter = "(&(objectClass=user)(samaccounttype=" . adLDAP::ADLDAP_NORMAL_ACCOUNT . ")(objectCategory=person)(cn=" . $search . "))";
+		$fields = array("samaccountname", "employeeID", "bannerUDC", "scriptPath");
+		$sr = ldap_search($this->adldap->getLdapConnection(), $this->adldap->getBaseDn(), $filter, $fields);
+		$entries = ldap_get_entries($this->adldap->getLdapConnection(), $sr);
+
+		return $entries;
 	}
 
 	/**
