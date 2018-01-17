@@ -25,13 +25,13 @@ namespace adLDAP;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * @category ToolsAndUtilities
- * @package adLDAP
- * @author Scott Barnett, Richard Hyland
+ * @category      ToolsAndUtilities
+ * @package       adLDAP
+ * @author        Scott Barnett, Richard Hyland
  * @copyright (c) 2006-2014 Scott Barnett, Richard Hyland
- * @license http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html LGPLv2.1
- * @version 5.0.0
- * @link http://github.com/adldap/adLDAP
+ * @license       http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html LGPLv2.1
+ * @version       5.0.0
+ * @link          http://github.com/adldap/adLDAP
  */
 
 /**
@@ -46,10 +46,10 @@ namespace adLDAP;
  * Before asking questions, please read the Documentation at
  * http://adldap.sourceforge.net/wiki/doku.php?id=api
  */
-use /** @noinspection PhpUndefinedNamespaceInspection */
-	/** @noinspection PhpUndefinedClassInspection */
-	Cu\Logging\Helpers\Logging;
+
+use Cu\Logging\Helpers\Logging;
 use Exception;
+use Log;
 
 require_once(dirname(__FILE__) . '/collections/adLDAPCollection.php');
 require_once(dirname(__FILE__) . '/classes/adLDAPGroups.php');
@@ -60,22 +60,21 @@ require_once(dirname(__FILE__) . '/classes/adLDAPContacts.php');
 require_once(dirname(__FILE__) . '/classes/adLDAPExchange.php');
 require_once(dirname(__FILE__) . '/classes/adLDAPComputers.php');
 
-class adLDAP
-{
+class adLDAP {
 
 	/**
 	 * Define the different types of account in AD
 	 * @extract [ADLDAP] LDAP constants
 	 */
-	const ADLDAP_NORMAL_ACCOUNT           = 805306368;
-	const ADLDAP_WORKSTATION_TRUST        = 805306369;
-	const ADLDAP_INTERDOMAIN_TRUST        = 805306370;
-	const ADLDAP_SECURITY_GLOBAL_GROUP    = 268435456;
-	const ADLDAP_DISTRIBUTION_GROUP       = 268435457;
-	const ADLDAP_SECURITY_LOCAL_GROUP     = 536870912;
+	const ADLDAP_NORMAL_ACCOUNT = 805306368;
+	const ADLDAP_WORKSTATION_TRUST = 805306369;
+	const ADLDAP_INTERDOMAIN_TRUST = 805306370;
+	const ADLDAP_SECURITY_GLOBAL_GROUP = 268435456;
+	const ADLDAP_DISTRIBUTION_GROUP = 268435457;
+	const ADLDAP_SECURITY_LOCAL_GROUP = 536870912;
 	const ADLDAP_DISTRIBUTION_LOCAL_GROUP = 536870913;
-	const ADLDAP_FOLDER                   = 'OU';
-	const ADLDAP_CONTAINER                = 'CN';
+	const ADLDAP_FOLDER = 'OU';
+	const ADLDAP_CONTAINER = 'CN';
 
 	/**
 	 * The default port for LDAP non-SSL connections
@@ -136,7 +135,7 @@ class adLDAP
 	 *
 	 * @var bool
 	 */
-	protected $realPrimaryGroup = true;
+	protected $realPrimaryGroup = TRUE;
 
 	/**
 	 * Use SSL (LDAPS), your server needs to be setup, please see
@@ -144,7 +143,7 @@ class adLDAP
 	 *
 	 * @var bool
 	 */
-	protected $useSSL = false;
+	protected $useSSL = FALSE;
 
 	/**
 	 * Use TLS
@@ -152,7 +151,7 @@ class adLDAP
 	 *
 	 * @var bool
 	 */
-	protected $useTLS = false;
+	protected $useTLS = FALSE;
 
 	/**
 	 * Use SSO
@@ -160,7 +159,7 @@ class adLDAP
 	 *
 	 * @var bool
 	 */
-	protected $useSSO = false;
+	protected $useSSO = FALSE;
 
 	/**
 	 * When querying group memberships, do it recursively
@@ -169,7 +168,7 @@ class adLDAP
 	 *
 	 * @var bool
 	 */
-	protected $recursiveGroups = true;
+	protected $recursiveGroups = TRUE;
 
 	/**
 	 * When a query returns a referral, follow it.
@@ -195,14 +194,12 @@ class adLDAP
 	 *
 	 * @return resource|bool
 	 */
-	public function getLdapConnection()
-	{
-		if ($this->ldapConnection)
-		{
+	public function getLdapConnection() {
+		if ($this->ldapConnection) {
 			return $this->ldapConnection;
 		}
 
-		return false;
+		return FALSE;
 	}
 
 	/**
@@ -210,8 +207,7 @@ class adLDAP
 	 *
 	 * @return bool
 	 */
-	public function getLdapBind()
-	{
+	public function getLdapBind() {
 		return $this->ldapBind;
 	}
 
@@ -220,8 +216,7 @@ class adLDAP
 	 *
 	 * @return string
 	 */
-	public function getBaseDn()
-	{
+	public function getBaseDn() {
 		return $this->baseDn;
 	}
 
@@ -230,8 +225,7 @@ class adLDAP
 	 *
 	 * @param string $baseDn
 	 */
-	public function setBaseDn($baseDn)
-	{
+	public function setBaseDn($baseDn) {
 		$this->baseDn = $baseDn;
 	}
 
@@ -247,10 +241,8 @@ class adLDAP
 	 *
 	 * @return \adLDAP\classes\adLDAPGroups
 	 */
-	public function group()
-	{
-		if (!$this->groupClass)
-		{
+	public function group() {
+		if (!$this->groupClass) {
 			$this->groupClass = new \adLDAP\classes\adLDAPGroups($this);
 		}
 		return $this->groupClass;
@@ -268,10 +260,8 @@ class adLDAP
 	 *
 	 * @return \adLDAP\classes\adLDAPUsers
 	 */
-	public function user()
-	{
-		if (!$this->userClass)
-		{
+	public function user() {
+		if (!$this->userClass) {
 			$this->userClass = new \adLDAP\classes\adLDAPUsers($this);
 		}
 		return $this->userClass;
@@ -289,10 +279,8 @@ class adLDAP
 	 *
 	 * @return \adLDAP\classes\adLDAPFolders
 	 */
-	public function folder()
-	{
-		if (!$this->folderClass)
-		{
+	public function folder() {
+		if (!$this->folderClass) {
 			$this->folderClass = new \adLDAP\classes\adLDAPFolders($this);
 		}
 		return $this->folderClass;
@@ -310,10 +298,8 @@ class adLDAP
 	 *
 	 * @return \adLDAP\classes\adLDAPUtils
 	 */
-	public function utilities()
-	{
-		if (!$this->utilClass)
-		{
+	public function utilities() {
+		if (!$this->utilClass) {
 			$this->utilClass = new \adLDAP\classes\adLDAPUtils($this);
 		}
 		return $this->utilClass;
@@ -331,10 +317,8 @@ class adLDAP
 	 *
 	 * @return \adLDAP\classes\adLDAPContacts
 	 */
-	public function contact()
-	{
-		if (!$this->contactClass)
-		{
+	public function contact() {
+		if (!$this->contactClass) {
 			$this->contactClass = new \adLDAP\classes\adLDAPContacts($this);
 		}
 		return $this->contactClass;
@@ -352,10 +336,8 @@ class adLDAP
 	 *
 	 * @return \adLDAP\classes\adLDAPExchange
 	 */
-	public function exchange()
-	{
-		if (!$this->exchangeClass)
-		{
+	public function exchange() {
+		if (!$this->exchangeClass) {
 			$this->exchangeClass = new \adLDAP\classes\adLDAPExchange($this);
 		}
 		return $this->exchangeClass;
@@ -373,10 +355,8 @@ class adLDAP
 	 *
 	 * @return \adLDAP\classes\adLDAPComputers
 	 */
-	public function computer()
-	{
-		if (!$this->computerClass)
-		{
+	public function computer() {
+		if (!$this->computerClass) {
 			$this->computerClass = new \adLDAP\classes\adLDAPComputers($this);
 		}
 		return $this->computerClass;
@@ -392,8 +372,7 @@ class adLDAP
 	 * @param string $accountSuffix
 	 * @return void
 	 */
-	public function setAccountSuffix($accountSuffix)
-	{
+	public function setAccountSuffix($accountSuffix) {
 		$this->accountSuffix = $accountSuffix;
 	}
 
@@ -402,8 +381,7 @@ class adLDAP
 	 *
 	 * @return string
 	 */
-	public function getAccountSuffix()
-	{
+	public function getAccountSuffix() {
 		return $this->accountSuffix;
 	}
 
@@ -413,8 +391,7 @@ class adLDAP
 	 * @param array $domainControllers
 	 * @return void
 	 */
-	public function setDomainControllers(array $domainControllers)
-	{
+	public function setDomainControllers(array $domainControllers) {
 		$this->domainControllers = $domainControllers;
 	}
 
@@ -423,8 +400,7 @@ class adLDAP
 	 *
 	 * @return array
 	 */
-	public function getDomainControllers()
-	{
+	public function getDomainControllers() {
 		return $this->domainControllers;
 	}
 
@@ -433,8 +409,7 @@ class adLDAP
 	 *
 	 * @param int $adPort
 	 */
-	public function setPort($adPort)
-	{
+	public function setPort($adPort) {
 		$this->adPort = $adPort;
 	}
 
@@ -443,8 +418,7 @@ class adLDAP
 	 *
 	 * @return int
 	 */
-	public function getPort()
-	{
+	public function getPort() {
 		return $this->adPort;
 	}
 
@@ -454,8 +428,7 @@ class adLDAP
 	 * @param string $adminUsername
 	 * @return void
 	 */
-	public function setAdminUsername($adminUsername)
-	{
+	public function setAdminUsername($adminUsername) {
 		$this->adminUsername = $adminUsername;
 	}
 
@@ -464,8 +437,7 @@ class adLDAP
 	 *
 	 * This will throw an exception for security reasons
 	 */
-	public function getAdminUsername()
-	{
+	public function getAdminUsername() {
 		throw new adLDAPException('For security reasons you cannot access the domain administrator account details');
 	}
 
@@ -475,8 +447,7 @@ class adLDAP
 	 * @param string $adminPassword
 	 * @return void
 	 */
-	public function setAdminPassword($adminPassword)
-	{
+	public function setAdminPassword($adminPassword) {
 		$this->adminPassword = $adminPassword;
 	}
 
@@ -485,8 +456,7 @@ class adLDAP
 	 *
 	 * This will throw an exception for security reasons
 	 */
-	public function getAdminPassword()
-	{
+	public function getAdminPassword() {
 		throw new adLDAPException('For security reasons you cannot access the domain administrator account details');
 	}
 
@@ -496,8 +466,7 @@ class adLDAP
 	 * @param bool $realPrimaryGroup
 	 * @return void
 	 */
-	public function setRealPrimaryGroup($realPrimaryGroup)
-	{
+	public function setRealPrimaryGroup($realPrimaryGroup) {
 		$this->realPrimaryGroup = $realPrimaryGroup;
 	}
 
@@ -506,8 +475,7 @@ class adLDAP
 	 *
 	 * @return bool
 	 */
-	public function getRealPrimaryGroup()
-	{
+	public function getRealPrimaryGroup() {
 		return $this->realPrimaryGroup;
 	}
 
@@ -517,16 +485,12 @@ class adLDAP
 	 * @param bool $useSSL
 	 * @return void
 	 */
-	public function setUseSSL($useSSL)
-	{
+	public function setUseSSL($useSSL) {
 		$this->useSSL = $useSSL;
 		// Set the default port correctly
-		if ($this->useSSL)
-		{
+		if ($this->useSSL) {
 			$this->setPort(self::ADLDAP_LDAPS_PORT);
-		}
-		else
-		{
+		} else {
 			$this->setPort(self::ADLDAP_LDAP_PORT);
 		}
 	}
@@ -536,8 +500,7 @@ class adLDAP
 	 *
 	 * @return bool
 	 */
-	public function getUseSSL()
-	{
+	public function getUseSSL() {
 		return $this->useSSL;
 	}
 
@@ -547,8 +510,7 @@ class adLDAP
 	 * @param bool $useTLS
 	 * @return void
 	 */
-	public function setUseTLS($useTLS)
-	{
+	public function setUseTLS($useTLS) {
 		$this->useTLS = $useTLS;
 	}
 
@@ -557,8 +519,7 @@ class adLDAP
 	 *
 	 * @return bool
 	 */
-	public function getUseTLS()
-	{
+	public function getUseTLS() {
 		return $this->useTLS;
 	}
 
@@ -569,10 +530,8 @@ class adLDAP
 	 * @param bool $useSSO
 	 * @throws adLDAPException
 	 */
-	public function setUseSSO($useSSO)
-	{
-		if ($useSSO === true && !$this->ldapSaslSupported())
-		{
+	public function setUseSSO($useSSO) {
+		if ($useSSO === TRUE && !$this->ldapSaslSupported()) {
 			throw new adLDAPException('No LDAP SASL support for PHP.  See: http://www.php.net/ldap_sasl_bind');
 		}
 		$this->useSSO = $useSSO;
@@ -583,8 +542,7 @@ class adLDAP
 	 *
 	 * @return bool
 	 */
-	public function getUseSSO()
-	{
+	public function getUseSSO() {
 		return $this->useSSO;
 	}
 
@@ -594,8 +552,7 @@ class adLDAP
 	 * @param bool $recursiveGroups
 	 * @return void
 	 */
-	public function setRecursiveGroups($recursiveGroups)
-	{
+	public function setRecursiveGroups($recursiveGroups) {
 		$this->recursiveGroups = $recursiveGroups;
 	}
 
@@ -604,8 +561,7 @@ class adLDAP
 	 *
 	 * @return bool
 	 */
-	public function getRecursiveGroups()
-	{
+	public function getRecursiveGroups() {
 		return $this->recursiveGroups;
 	}
 
@@ -618,71 +574,54 @@ class adLDAP
 	 * @throws adLDAPException - if unable to bind to Domain Controller
 	 * @return bool
 	 */
-	function __construct($options = array())
-	{
+	function __construct($options = array()) {
 		// You can specifically overide any of the default configuration options setup above
-		if (count($options) > 0)
-		{
-			if (array_key_exists("account_suffix", $options))
-			{
+		if (count($options) > 0) {
+			if (array_key_exists("account_suffix", $options)) {
 				$this->accountSuffix = $options["account_suffix"];
 			}
-			if (array_key_exists("base_dn", $options))
-			{
+			if (array_key_exists("base_dn", $options)) {
 				$this->baseDn = $options["base_dn"];
 			}
-			if (array_key_exists("domain_controllers", $options))
-			{
-				if (!is_array($options["domain_controllers"]))
-				{
+			if (array_key_exists("domain_controllers", $options)) {
+				if (!is_array($options["domain_controllers"])) {
 					throw new adLDAPException('[domain_controllers] option must be an array');
 				}
 				$this->domainControllers = $options["domain_controllers"];
 			}
-			if (array_key_exists("admin_username", $options))
-			{
+			if (array_key_exists("admin_username", $options)) {
 				$this->adminUsername = $options["admin_username"];
 			}
-			if (array_key_exists("admin_password", $options))
-			{
+			if (array_key_exists("admin_password", $options)) {
 				$this->adminPassword = $options["admin_password"];
 			}
-			if (array_key_exists("real_primarygroup", $options))
-			{
+			if (array_key_exists("real_primarygroup", $options)) {
 				$this->realPrimaryGroup = $options["real_primarygroup"];
 			}
-			if (array_key_exists("use_ssl", $options))
-			{
+			if (array_key_exists("use_ssl", $options)) {
 				$this->setUseSSL($options["use_ssl"]);
 			}
-			if (array_key_exists("use_tls", $options))
-			{
+			if (array_key_exists("use_tls", $options)) {
 				$this->useTLS = $options["use_tls"];
 			}
-			if (array_key_exists("recursive_groups", $options))
-			{
+			if (array_key_exists("recursive_groups", $options)) {
 				$this->recursiveGroups = $options["recursive_groups"];
 			}
-			if (array_key_exists("follow_referrals", $options))
-			{
+			if (array_key_exists("follow_referrals", $options)) {
 				$this->followReferrals = $options["follow_referrals"];
 			}
-			if (array_key_exists("ad_port", $options))
-			{
+			if (array_key_exists("ad_port", $options)) {
 				$this->setPort($options["ad_port"]);
 			}
-			if (array_key_exists("sso", $options))
-			{
+			if (array_key_exists("sso", $options)) {
 				$this->setUseSSO($options["sso"]);
-				if (!$this->ldapSaslSupported())
-				{
-					$this->setUseSSO(false);
+				if (!$this->ldapSaslSupported()) {
+					$this->setUseSSO(FALSE);
 				}
 			}
 		}
 
-		if ($this->ldapSupported() === false)
-		{
+		if ($this->ldapSupported() === FALSE) {
 			throw new adLDAPException('No LDAP support for PHP.  See: http://www.php.net/ldap');
 		}
 
@@ -696,8 +635,7 @@ class adLDAP
 	 *
 	 * @return void
 	 */
-	function __destruct()
-	{
+	function __destruct() {
 		$this->close();
 	}
 
@@ -707,16 +645,12 @@ class adLDAP
 	 * @return bool
 	 * @throws adLDAPException
 	 */
-	public function connect()
-	{
+	public function connect() {
 		// Connect to the AD/LDAP server as the username/password
 		$domainController = $this->randomController();
-		if ($this->useSSL)
-		{
+		if ($this->useSSL) {
 			$this->ldapConnection = ldap_connect("ldaps://" . $domainController, $this->adPort);
-		}
-		else
-		{
+		} else {
 			$this->ldapConnection = ldap_connect("ldap://" . $domainController, $this->adPort);
 		}
 
@@ -724,47 +658,36 @@ class adLDAP
 		ldap_set_option($this->ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);
 		ldap_set_option($this->ldapConnection, LDAP_OPT_REFERRALS, $this->followReferrals);
 
-		if ($this->useTLS)
-		{
+		if ($this->useTLS) {
 			ldap_start_tls($this->ldapConnection);
 		}
 
 		// Bind as a domain admin if they've set it up
-		if ($this->adminUsername !== NULL && $this->adminPassword !== NULL)
-		{
+		if ($this->adminUsername !== NULL && $this->adminPassword !== NULL) {
 			$this->ldapBind = @ldap_bind($this->ldapConnection, $this->adminUsername . $this->accountSuffix, $this->adminPassword);
-			if (!$this->ldapBind)
-			{
-				if ($this->useSSL && !$this->useTLS)
-				{
+			if (!$this->ldapBind) {
+				if ($this->useSSL && !$this->useTLS) {
 					// If you have problems troubleshooting, remove the @ character from the ldapldapBind command above to get the actual error message
 					throw new adLDAPException('Bind to Active Directory failed. Either the LDAPs connection failed or the login credentials are incorrect. AD said: ' . $this->getLastError());
-				}
-				else
-				{
+				} else {
 					throw new adLDAPException('Bind to Active Directory failed. Check the login credentials and/or server details. AD said: ' . $this->getLastError());
 				}
 			}
 		}
-		if ($this->useSSO && $_SERVER['REMOTE_USER'] && $this->adminUsername === null && $_SERVER['KRB5CCNAME'])
-		{
+		if ($this->useSSO && $_SERVER['REMOTE_USER'] && $this->adminUsername === NULL && $_SERVER['KRB5CCNAME']) {
 			putenv("KRB5CCNAME=" . $_SERVER['KRB5CCNAME']);
 			$this->ldapBind = @ldap_sasl_bind($this->ldapConnection, NULL, NULL, "GSSAPI");
-			if (!$this->ldapBind)
-			{
+			if (!$this->ldapBind) {
 				throw new adLDAPException('Rebind to Active Directory failed. AD said: ' . $this->getLastError());
-			}
-			else
-			{
-				return true;
+			} else {
+				return TRUE;
 			}
 		}
 
-		if ($this->baseDn == NULL)
-		{
+		if ($this->baseDn == NULL) {
 			$this->baseDn = $this->findBaseDn();
 		}
-		return true;
+		return TRUE;
 	}
 
 	/**
@@ -772,10 +695,8 @@ class adLDAP
 	 *
 	 * @return void
 	 */
-	public function close()
-	{
-		if ($this->ldapConnection)
-		{
+	public function close() {
+		if ($this->ldapConnection) {
 			@ldap_close($this->ldapConnection);
 		}
 	}
@@ -783,66 +704,55 @@ class adLDAP
 	/**
 	 * Validate a user's login credentials
 	 *
-	 * @param string $username A user's AD username
-	 * @param string $password A user's AD password
+	 * @param string $username    A user's AD username
+	 * @param string $password    A user's AD password
 	 * @param bool $preventRebind optional
 	 * @return bool
 	 * @throws adLDAPException
 	 */
-	public function authenticate($username, $password, $preventRebind = false)
-	{
+	public function authenticate($username, $password, $preventRebind = FALSE) {
 		/** @noinspection PhpUndefinedClassInspection */
 		Logging::var_trace('username', $username);
 		/** @noinspection PhpUndefinedClassInspection */
 		Logging::var_trace('preventRebind', $preventRebind);
 
 		// Prevent null binding
-		if ($username === NULL || $password === NULL)
-		{
-			return false;
+		if ($username === NULL || $password === NULL) {
+			return FALSE;
 		}
-		if (empty($username) || empty($password))
-		{
-			return false;
+		if (empty($username) || empty($password)) {
+			return FALSE;
 		}
 
 		// Allow binding over SSO for Kerberos
-		if ($this->useSSO && $_SERVER['REMOTE_USER'] && $_SERVER['REMOTE_USER'] == $username && $this->adminUsername === NULL && $_SERVER['KRB5CCNAME'])
-		{
+		if ($this->useSSO && $_SERVER['REMOTE_USER'] && $_SERVER['REMOTE_USER'] == $username && $this->adminUsername === NULL && $_SERVER['KRB5CCNAME']) {
 			/** @noinspection PhpUndefinedClassInspection */
 			Logging::trace('putenv("KRB5CCNAME="' . $_SERVER['KRB5CCNAME'] . '" and perform ldap_sasl_bind');
 			putenv("KRB5CCNAME=" . $_SERVER['KRB5CCNAME']);
 			$this->ldapBind = @ldap_sasl_bind($this->ldapConnection, NULL, NULL, "GSSAPI");
-			if (!$this->ldapBind)
-			{
+			if (!$this->ldapBind) {
 				throw new adLDAPException('Rebind to Active Directory failed. AD said: ' . $this->getLastError());
-			}
-			else
-			{
-				return true;
+			} else {
+				return TRUE;
 			}
 		}
 
 		/** @noinspection PhpUndefinedClassInspection */
-		Logging::trace('ldap_bind(' . $this->ldapConnection . ', ' . $username . $this->accountSuffix . ', $password');
 
 		// Bind as the user
-		$ret            = true;
+		$ret = TRUE;
 		$this->ldapBind = @ldap_bind($this->ldapConnection, $username . $this->accountSuffix, $password);
-		if (!$this->ldapBind)
-		{
-			$ret = false;
+		if (!$this->ldapBind) {
+			throw new adLDAPException('Rebind to Active Directory failed. AD said: ' . $this->getLastError());
 		}
 
 		// Once we've checked their details, kick back into admin mode if we have it
-		if ($this->adminUsername !== NULL && !$preventRebind)
-		{
+		if ($this->adminUsername !== NULL && !$preventRebind) {
 			/** @noinspection PhpUndefinedClassInspection */
 			Logging::trace('ldap_bind(' . $this->ldapConnection . ', ' . $this->adminUsername . $this->accountSuffix . ', $this->adminPassword');
 
 			$this->ldapBind = @ldap_bind($this->ldapConnection, $this->adminUsername . $this->accountSuffix, $this->adminPassword);
-			if (!$this->ldapBind)
-			{
+			if (!$this->ldapBind) {
 				// This should never happen in theory
 				throw new adLDAPException('Rebind to Active Directory failed. AD said: ' . $this->getLastError());
 			}
@@ -855,60 +765,47 @@ class adLDAP
 	 * $search has to match either cn, displayname, samaccountname or sn
 	 *
 	 * @param bool $includeDescription Return a description,cn, displayname and distinguishedname of the user
-	 * @param string $search Search parameter
-	 * @param bool $sorted Sort the user accounts
+	 * @param string $search           Search parameter
+	 * @param bool $sorted             Sort the user accounts
 	 * @return array|bool , if $includeDescription=true then a multi-dimensional array
 	 * @throws Exception
 	 */
-	public function search($includeDescription = false, $search = "*", $sorted = true)
-	{
-		if (!$this->getLdapBind())
-		{
-			return false;
+	public function search($includeDescription = FALSE, $search = "*", $sorted = TRUE) {
+		if (!$this->getLdapBind()) {
+			return FALSE;
 		}
 
 		// Perform the search and grab all their details
 		//$filter = "(|(cn=" . $search . ")(displayname=" . $search . ")(samaccountname=" . $search . "))";
 		$filter = "(&(!(objectClass=computer))(|(anr=" . $search . ")))";
 		$fields = array("cn", "description", "displayname", "distinguishedname", "samaccountname");
-		try
-		{
+		try {
 			$sr = ldap_search($this->getLdapConnection(), $this->getBaseDn(), $filter, $fields);
-		} catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			Logging::var_trace('filter', $filter);
 			Logging::var_trace('fields', $fields);
-			throw new Exception($e->getMessage() . "\nfilter = '" . $filter . "'\nfields = " . print_r($fields, true), 0, $e);
+			throw new Exception($e->getMessage() . "\nfilter = '" . $filter . "'\nfields = " . print_r($fields, TRUE), 0, $e);
 		}
-		try
-		{
+		try {
 			$entries = ldap_get_entries($this->getLdapConnection(), $sr);
-		} catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			/** @noinspection PhpUndefinedVariableInspection */
 			Logging::var_trace('sr', $sr);
-			throw new Exception($e->getMessage() . "\nsr = " . print_r($sr, true), 0, $e);
+			throw new Exception($e->getMessage() . "\nsr = " . print_r($sr, TRUE), 0, $e);
 		}
 
 		$objectArray = array();
-		for ($i = 0; $i < $entries["count"]; $i++)
-		{
-			if ($includeDescription && strlen($entries[$i]["description"][0]) > 0)
-			{
+		for ($i = 0; $i < $entries["count"]; $i++) {
+			if ($includeDescription && strlen($entries[$i]["description"][0]) > 0) {
 				$objectArray[$entries[$i]["samaccountname"][0]] = array($entries[$i]["cn"][0], $entries[$i]["description"][0], $entries[$i]["displayname"][0], $entries[$i]["distinguishedname"][0]);
-			}
-			elseif ($includeDescription)
-			{
+			} elseif ($includeDescription) {
 				// description is set to displayname if no description is present
 				$objectArray[$entries[$i]["samaccountname"][0]] = array($entries[$i]["cn"][0], $entries[$i]["displayname"][0], $entries[$i]["displayname"][0], $entries[$i]["distinguishedname"][0]);
-			}
-			else
-			{
+			} else {
 				array_push($objectArray, $entries[$i]["samaccountname"][0]);
 			}
 		}
-		if ($sorted)
-		{
+		if ($sorted) {
 			asort($objectArray);
 		}
 		return $objectArray;
@@ -921,44 +818,36 @@ class adLDAP
 	 * @return array|bool
 	 * @throws Exception
 	 */
-	public function getObjectClass($distinguishedName)
-	{
-		if ($distinguishedName === NULL)
-		{
-			return false;
+	public function getObjectClass($distinguishedName) {
+		if ($distinguishedName === NULL) {
+			return FALSE;
 		}
-		if (!$this->getLdapBind())
-		{
-			return false;
+		if (!$this->getLdapBind()) {
+			return FALSE;
 		}
 
 		$filter = "distinguishedName=" . $this->utilities()->ldapSlashes($distinguishedName);
 
 		$fields = array("objectclass");
-		try
-		{
+		try {
 			$sr = ldap_search($this->getLdapConnection(), $this->getBaseDn(), $filter, $fields);
-		} catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			Logging::var_trace('filter', $filter);
 			Logging::var_trace('fields', $fields);
-			throw new Exception($e->getMessage() . "\nfilter = '" . $filter . "'\nfields = " . print_r($fields, true), 0, $e);
+			throw new Exception($e->getMessage() . "\nfilter = '" . $filter . "'\nfields = " . print_r($fields, TRUE), 0, $e);
 		}
 
-		try
-		{
+		try {
 			/** @noinspection PhpUndefinedVariableInspection */
 			$entries = ldap_get_entries($this->getLdapConnection(), $sr);
-		} catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			/** @noinspection PhpUndefinedVariableInspection */
 			Logging::var_trace('sr', $sr);
-			throw new Exception($e->getMessage() . "\nsr = " . print_r($sr, true), 0, $e);
+			throw new Exception($e->getMessage() . "\nsr = " . print_r($sr, TRUE), 0, $e);
 		}
 
 		$objects = array();
-		for ($i = 0; $i < $entries[0]["objectclass"]["count"]; $i++)
-		{
+		for ($i = 0; $i < $entries[0]["objectclass"]["count"]; $i++) {
 			array_push($objects, $entries[0]["objectclass"][$i]);
 		}
 		return $objects;
@@ -969,8 +858,7 @@ class adLDAP
 	 *
 	 * @return string
 	 */
-	public function findBaseDn()
-	{
+	public function findBaseDn() {
 		$namingContext = $this->getRootDse(array('defaultnamingcontext'));
 		return $namingContext[0]['defaultnamingcontext'][0];
 	}
@@ -981,14 +869,12 @@ class adLDAP
 	 * @param array $attributes The attributes you wish to query e.g. defaultnamingcontext
 	 * @return array|bool
 	 */
-	public function getRootDse($attributes = array("*", "+"))
-	{
-		if (!$this->ldapBind)
-		{
-			return (false);
+	public function getRootDse($attributes = array("*", "+")) {
+		if (!$this->ldapBind) {
+			return (FALSE);
 		}
 
-		$sr      = @ldap_read($this->ldapConnection, NULL, 'objectClass=*', $attributes);
+		$sr = @ldap_read($this->ldapConnection, NULL, 'objectClass=*', $attributes);
 		$entries = @ldap_get_entries($this->ldapConnection, $sr);
 		return $entries;
 	}
@@ -1002,8 +888,7 @@ class adLDAP
 	 *
 	 * return string
 	 */
-	public function getLastError()
-	{
+	public function getLastError() {
 		return @ldap_error($this->ldapConnection);
 	}
 
@@ -1012,13 +897,11 @@ class adLDAP
 	 *
 	 * @return bool
 	 */
-	protected function ldapSupported()
-	{
-		if (!function_exists('ldap_connect'))
-		{
-			return false;
+	protected function ldapSupported() {
+		if (!function_exists('ldap_connect')) {
+			return FALSE;
 		}
-		return true;
+		return TRUE;
 	}
 
 	/**
@@ -1026,13 +909,11 @@ class adLDAP
 	 *
 	 * @return bool
 	 */
-	protected function ldapSaslSupported()
-	{
-		if (!function_exists('ldap_sasl_bind'))
-		{
-			return false;
+	protected function ldapSaslSupported() {
+		if (!function_exists('ldap_sasl_bind')) {
+			return FALSE;
 		}
-		return true;
+		return TRUE;
 	}
 
 	/**
@@ -1041,8 +922,7 @@ class adLDAP
 	 * @param array $attributes Attributes to be queried
 	 * @return array|bool
 	 */
-	public function adldap_schema($attributes)
-	{
+	public function adldap_schema($attributes) {
 
 		// LDAP doesn't like NULL attributes, only set them if they have values
 		// If you wish to remove an attribute you should set it to a space
@@ -1052,196 +932,164 @@ class adLDAP
 		// Check every attribute to see if it contains 8bit characters and then UTF8 encode them
 		array_walk($attributes, array($this, 'encode8bit'));
 
-		if (isset($attributes["address_city"]))
-		{
+		if (isset($attributes["address_city"])) {
 			$mod["l"][0] = $attributes["address_city"];
 		}
-		if (isset($attributes["address_code"]))
-		{
+		if (isset($attributes["address_code"])) {
 			$mod["postalCode"][0] = $attributes["address_code"];
 		}
 		//if ($attributes["address_country"]){ $mod["countryCode"][0]=$attributes["address_country"]; } // use country codes?
-		if (isset($attributes["address_country"]))
-		{
+		if (isset($attributes["address_country"])) {
 			$mod["c"][0] = $attributes["address_country"];
 		}
-		if (isset($attributes["address_pobox"]))
-		{
+		if (isset($attributes["address_pobox"])) {
 			$mod["postOfficeBox"][0] = $attributes["address_pobox"];
 		}
-		if (isset($attributes["address_state"]))
-		{
+		if (isset($attributes["address_state"])) {
 			$mod["st"][0] = $attributes["address_state"];
 		}
-		if (isset($attributes["address_street"]))
-		{
+		if (isset($attributes["address_street"])) {
 			$mod["streetAddress"][0] = $attributes["address_street"];
 		}
-		if (isset($attributes["company"]))
-		{
+		if (isset($attributes["company"])) {
 			$mod["company"][0] = $attributes["company"];
 		}
-		if (isset($attributes["change_password"]))
-		{
+		if (isset($attributes["change_password"])) {
 			$mod["pwdLastSet"][0] = 0;
 		}
-		if (isset($attributes["department"]))
-		{
+		if (isset($attributes["department"])) {
 			$mod["department"][0] = $attributes["department"];
 		}
-		if (isset($attributes["description"]))
-		{
+		if (isset($attributes["description"])) {
 			$mod["description"][0] = $attributes["description"];
 		}
-		if (isset($attributes["display_name"]))
-		{
+		if (isset($attributes["display_name"])) {
 			$mod["displayName"][0] = $attributes["display_name"];
 		}
-		if (isset($attributes["email"]))
-		{
+		if (isset($attributes["email"])) {
 			$mod["mail"][0] = $attributes["email"];
 		}
-		if (isset($attributes["expires"]))
-		{
+		if (isset($attributes["expires"])) {
 			$mod["accountExpires"][0] = $attributes["expires"];
 		} //unix epoch format?
-		if (isset($attributes["firstname"]))
-		{
+		if (isset($attributes["firstname"])) {
 			$mod["givenName"][0] = $attributes["firstname"];
 		}
-		if (isset($attributes["home_directory"]))
-		{
+		if (isset($attributes["home_directory"])) {
 			$mod["homeDirectory"][0] = $attributes["home_directory"];
 		}
-		if (isset($attributes["home_drive"]))
-		{
+		if (isset($attributes["home_drive"])) {
 			$mod["homeDrive"][0] = $attributes["home_drive"];
 		}
-		if (isset($attributes["initials"]))
-		{
+		if (isset($attributes["initials"])) {
 			$mod["initials"][0] = $attributes["initials"];
 		}
-		if (isset($attributes["logon_name"]))
-		{
+		if (isset($attributes["logon_name"])) {
 			$mod["userPrincipalName"][0] = $attributes["logon_name"];
 		}
-		if (isset($attributes["manager"]))
-		{
+		if (isset($attributes["manager"])) {
 			$mod["manager"][0] = $attributes["manager"];
 		}  //UNTESTED ***Use DistinguishedName***
-		if (isset($attributes["office"]))
-		{
+		if (isset($attributes["office"])) {
 			$mod["physicalDeliveryOfficeName"][0] = $attributes["office"];
 		}
-		if (isset($attributes["password"]))
-		{
+		if (isset($attributes["password"])) {
 			$mod["unicodePwd"][0] = $this->user()->encodePassword($attributes["password"]);
 		}
-		if (isset($attributes["profile_path"]))
-		{
+		if (isset($attributes["profile_path"])) {
 			$mod["profilepath"][0] = $attributes["profile_path"];
 		}
-		if (isset($attributes["script_path"]))
-		{
+		if (isset($attributes["script_path"])) {
 			$mod["scriptPath"][0] = $attributes["script_path"];
 		}
-		if (isset($attributes["surname"]))
-		{
+		if (isset($attributes["surname"])) {
 			$mod["sn"][0] = $attributes["surname"];
 		}
-		if (isset($attributes["title"]))
-		{
+		if (isset($attributes["title"])) {
 			$mod["title"][0] = $attributes["title"];
 		}
-		if (isset($attributes["telephone"]))
-		{
+		if (isset($attributes["telephone"])) {
 			$mod["telephoneNumber"][0] = $attributes["telephone"];
 		}
-		if (isset($attributes["mobile"]))
-		{
+		if (isset($attributes["mobile"])) {
 			$mod["mobile"][0] = $attributes["mobile"];
 		}
-		if (isset($attributes["pager"]))
-		{
+		if (isset($attributes["pager"])) {
 			$mod["pager"][0] = $attributes["pager"];
 		}
-		if (isset($attributes["ipphone"]))
-		{
+		if (isset($attributes["ipphone"])) {
 			$mod["ipphone"][0] = $attributes["ipphone"];
 		}
-		if (isset($attributes["web_page"]))
-		{
+		if (isset($attributes["web_page"])) {
 			$mod["wWWHomePage"][0] = $attributes["web_page"];
 		}
-		if (isset($attributes["fax"]))
-		{
+		if (isset($attributes["fax"])) {
 			$mod["facsimileTelephoneNumber"][0] = $attributes["fax"];
 		}
-		if (isset($attributes["enabled"]))
-		{
+		if (isset($attributes["enabled"])) {
 			$mod["userAccountControl"][0] = $attributes["enabled"];
 		}
-		if (isset($attributes["homephone"]))
-		{
+		if (isset($attributes["homephone"])) {
 			$mod["homephone"][0] = $attributes["homephone"];
 		}
 
 		// Distribution List specific schema
-		if (isset($attributes["group_sendpermission"]))
-		{
+		if (isset($attributes["group_sendpermission"])) {
 			$mod["dlMemSubmitPerms"][0] = $attributes["group_sendpermission"];
 		}
-		if (isset($attributes["group_rejectpermission"]))
-		{
+		if (isset($attributes["group_rejectpermission"])) {
 			$mod["dlMemRejectPerms"][0] = $attributes["group_rejectpermission"];
 		}
 
 		// Exchange Schema
-		if (isset($attributes["exchange_homemdb"]))
-		{
+		if (isset($attributes["exchange_homemdb"])) {
 			$mod["homeMDB"][0] = $attributes["exchange_homemdb"];
 		}
-		if (isset($attributes["exchange_mailnickname"]))
-		{
+		if (isset($attributes["exchange_mailnickname"])) {
 			$mod["mailNickname"][0] = $attributes["exchange_mailnickname"];
 		}
-		if (isset($attributes["exchange_proxyaddress"]))
-		{
+		if (isset($attributes["exchange_proxyaddress"])) {
 			$mod["proxyAddresses"][0] = $attributes["exchange_proxyaddress"];
 		}
-		if (isset($attributes["exchange_usedefaults"]))
-		{
+		if (isset($attributes["exchange_usedefaults"])) {
 			$mod["mDBUseDefaults"][0] = $attributes["exchange_usedefaults"];
 		}
-		if (isset($attributes["exchange_policyexclude"]))
-		{
+		if (isset($attributes["exchange_policyexclude"])) {
 			$mod["msExchPoliciesExcluded"][0] = $attributes["exchange_policyexclude"];
 		}
-		if (isset($attributes["exchange_policyinclude"]))
-		{
+		if (isset($attributes["exchange_policyinclude"])) {
 			$mod["msExchPoliciesIncluded"][0] = $attributes["exchange_policyinclude"];
 		}
-		if (isset($attributes["exchange_addressbook"]))
-		{
+		if (isset($attributes["exchange_addressbook"])) {
 			$mod["showInAddressBook"][0] = $attributes["exchange_addressbook"];
 		}
-		if (isset($attributes["exchange_altrecipient"]))
-		{
+		if (isset($attributes["exchange_altrecipient"])) {
 			$mod["altRecipient"][0] = $attributes["exchange_altrecipient"];
 		}
-		if (isset($attributes["exchange_deliverandredirect"]))
-		{
+		if (isset($attributes["exchange_deliverandredirect"])) {
 			$mod["deliverAndRedirect"][0] = $attributes["exchange_deliverandredirect"];
 		}
 
 		// This schema is designed for contacts
-		if (isset($attributes["exchange_hidefromlists"]))
-		{
+		if (isset($attributes["exchange_hidefromlists"])) {
 			$mod["msExchHideFromAddressLists"][0] = $attributes["exchange_hidefromlists"];
 		}
-		if (isset($attributes["contact_email"]))
-		{
+		if (isset($attributes["contact_email"])) {
 			$mod["targetAddress"][0] = $attributes["contact_email"];
+		}
+
+		//this should work
+		if (isset($attributes["bannerudc"])) {
+			$mod["bannerudc"][0] = $attributes["bannerudc"];
+		}
+
+		// this shouldn't work
+		if (isset($attributes["bannerUDC"])) {
+			$mod["bannerUDC"][0] = $attributes["bannerUDC"];
+		}
+
+		if (isset($attributes["employeeid"])) {
+			$mod["employeeid"][0] = $attributes["employeeid"];
 		}
 
 		//echo ("<pre>"); print_r($mod);
@@ -1254,9 +1102,8 @@ class adLDAP
 		}
 		*/
 
-		if (count($mod) == 0)
-		{
-			return false;
+		if (count($mod) == 0) {
+			return FALSE;
 		}
 		return $mod;
 	}
@@ -1264,21 +1111,16 @@ class adLDAP
 	/**
 	 * Convert 8bit characters e.g. accented characters to UTF8 encoded characters
 	 */
-	protected function encode8Bit(&$item, $key)
-	{
-		$encode = false;
-		if (is_string($item))
-		{
-			for ($i = 0; $i < strlen($item); $i++)
-			{
-				if (ord($item[$i]) >> 7)
-				{
-					$encode = true;
+	protected function encode8Bit(&$item, $key) {
+		$encode = FALSE;
+		if (is_string($item)) {
+			for ($i = 0; $i < strlen($item); $i++) {
+				if (ord($item[$i]) >> 7) {
+					$encode = TRUE;
 				}
 			}
 		}
-		if ($encode === true && $key != 'password')
-		{
+		if ($encode === TRUE && $key != 'password') {
 			$item = utf8_encode($item);
 		}
 	}
@@ -1288,8 +1130,7 @@ class adLDAP
 	 *
 	 * @return string
 	 */
-	protected function randomController()
-	{
+	protected function randomController() {
 		mt_srand(doubleval(microtime()) * 100000000); // For older PHP versions
 		/*if (sizeof($this->domainControllers) > 1) {
 			$adController = $this->domainControllers[array_rand($this->domainControllers)];
@@ -1316,15 +1157,13 @@ class adLDAP
 	 * @param $host
 	 * @return bool
 	 */
-	protected function pingController($host)
-	{
+	protected function pingController($host) {
 		$port = $this->adPort;
 		fsockopen($host, $port, $errno, $errstr, 10);
-		if ($errno > 0)
-		{
-			return false;
+		if ($errno > 0) {
+			return FALSE;
 		}
-		return true;
+		return TRUE;
 	}
 
 }
@@ -1342,8 +1181,7 @@ class adLDAP
  *   exit();
  * }
  */
-class adLDAPException extends \Exception
-{
+class adLDAPException extends \Exception {
 }
 
 ?>
